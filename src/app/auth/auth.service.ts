@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { map } from 'rxjs/operators'
+import { Subscription } from 'rxjs';
 
 //Firebase
 import * as firebase from 'firebase';
@@ -14,20 +15,43 @@ import Swal from 'sweetalert2';
 //Models
 import { User } from './user.model';
 
+//Redux - ngrx
+import { Store } from '@ngrx/store';
+import { AppState } from '../app.reducer';
+import { ActivarLoadingAction, DescactivarLoadingAction } from '../shared/ui.accions';
+import { SetUserActions } from './auth.actions';
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
-  constructor(private afAuth: AngularFireAuth, private router: Router, private afDB: AngularFirestore) { }
   
-  /* 
-  Author: Lucas Mega
-  Method responsible for listening when you change the user state
-  */
+  private userSubscription: Subscription = new Subscription();
+
+    constructor(
+      private afAuth: AngularFireAuth, 
+      private router: Router, 
+      private afDB: AngularFirestore, 
+      private store: Store<AppState>
+    ) { }
+  
+  /**
+   * Author: Lucas Mega
+   * Method responsible for listening when you change the user state
+   * @param fbUser (Contains user information)
+   * @param usuarioObj (Contains user information)
+   * @param userSubscription (Uninscribe of the observable)
+   */
   public initAuthListener(): void {
-    this.afAuth.authState.subscribe((fbUser: firebase.User)  => {
-      console.log('FirebaseUser =>', fbUser);
+    this.userSubscription = this.afAuth.authState.subscribe((fbUser: firebase.User)  => {
+      if (fbUser) {
+        this.afDB.doc(`${fbUser.uid}/usuario`).valueChanges().subscribe((usuarioObj: any )=> {
+          const newUser = new User(usuarioObj);
+          this.store.dispatch(new SetUserActions(newUser));
+        });
+      } else {
+        this.userSubscription.unsubscribe();
+      }
     });
   }
   
@@ -36,6 +60,9 @@ export class AuthService {
     Service responsible for creating in-app user
   */
   public crearUsuario(nombre: string, email: string, password: string): void {
+    
+    this.store.dispatch(new ActivarLoadingAction());
+    
     this.afAuth.auth.createUserWithEmailAndPassword(email, password).then(res => {
 
       /* Create a per-user database on firebase */
@@ -43,7 +70,9 @@ export class AuthService {
       
       this.afDB.doc(`${user.uid}/usuario`).set(user).then(res => {
         this.router.navigate(['/']);
+        this.store.dispatch(new DescactivarLoadingAction());
       }).catch(error => {
+        this.store.dispatch(new DescactivarLoadingAction());
         Swal('Error en el login', error.message, 'error');
       }); 
         
@@ -59,11 +88,14 @@ export class AuthService {
   Service responsible for logging into the application
   */
   public login(email: string, password: string): void {
+    this.store.dispatch(new ActivarLoadingAction());
     this.afAuth.auth.signInWithEmailAndPassword(email, password).then(res => {
       console.log('resposta =>', res);
       this.router.navigate(['/']);
+      this.store.dispatch(new DescactivarLoadingAction());
     }).catch(error => {
       console.error(error);
+      this.store.dispatch(new DescactivarLoadingAction());
       Swal('Error en el login', error.message, 'error');
     });
   }
