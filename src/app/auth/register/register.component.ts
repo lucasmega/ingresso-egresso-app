@@ -18,10 +18,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
   public cargando: boolean;
   public subscription: Subscription = new Subscription();
 
-  constructor(public authService: AuthService, public store: Store<AppState>) { }
+  constructor(public authService: AuthService, public store: Store<AppState>) { 
+    this.subscription = this.store.select('ui').subscribe(ui => this.cargando = ui.isLoading);
+  }
 
   ngOnInit() {
-    this.subscription = this.store.select('ui').subscribe(ui => this.cargando = ui.isLoading);
   }
   
   ngOnDestroy() {

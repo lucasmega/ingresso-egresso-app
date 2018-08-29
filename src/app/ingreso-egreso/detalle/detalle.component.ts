@@ -22,12 +22,14 @@ export class DetalleComponent implements OnInit, OnDestroy {
   public items: IngresoEgresoModel[];
   public subscription: Subscription = new Subscription();
 
-  constructor(private store: Store<AppState>, private ingresoEgresoService: IngresoEgresoService) { }
-
-  ngOnInit() {
+  constructor(private store: Store<AppState>, private ingresoEgresoService: IngresoEgresoService) { 
     this.subscription = this.store.select('ingresoEgreso').subscribe(ingresoEgreso => {
       this.items = ingresoEgreso.items;
     });
+  }
+
+  ngOnInit() {
+
   }
   
   ngOnDestroy() {

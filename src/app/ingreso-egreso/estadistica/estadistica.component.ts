@@ -21,10 +21,11 @@ export class EstadisticaComponent implements OnInit, OnDestroy {
   public doughnutChartLabels: string[] = ['Ingresos', 'Egresos'];
   public doughnutChartData: number[] = [];
 
-  constructor(private store: Store<AppState>) { }
+  constructor(private store: Store<AppState>) { 
+    this.subscription = this.store.select('ingresoEgreso').subscribe(ingresoEgreso => this.contarIngresoEgreso(ingresoEgreso.items));
+  }
 
   ngOnInit() {
-    this.subscription = this.store.select('ingresoEgreso').subscribe(ingresoEgreso => this.contarIngresoEgreso(ingresoEgreso.items));
   }
   
   ngOnDestroy() {
