@@ -3,7 +3,8 @@ import { Subscription } from 'rxjs';
 
 import { Store } from '@ngrx/store';
 
-import { AppState } from '../../app.reducer';
+// import { AppState } from '../../app.reducer';
+import * as fromIngresoEgreso from '../ingreso-egreso.reducer';
 import { IngresoEgresoModel } from '../ingreso-egreso.model';
 
 @Component({
@@ -21,7 +22,7 @@ export class EstadisticaComponent implements OnInit, OnDestroy {
   public doughnutChartLabels: string[] = ['Ingresos', 'Egresos'];
   public doughnutChartData: number[] = [];
 
-  constructor(private store: Store<AppState>) { 
+  constructor(private store: Store<fromIngresoEgreso.AppState>) { 
     this.subscription = this.store.select('ingresoEgreso').subscribe(ingresoEgreso => this.contarIngresoEgreso(ingresoEgreso.items));
   }
 

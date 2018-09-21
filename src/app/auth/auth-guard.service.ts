@@ -1,18 +1,24 @@
-//Angular
 import { Injectable } from '@angular/core';
-import { CanActivate } from '@angular/router';
+import { CanActivate, CanLoad } from '@angular/router';
 
-//Services
+import { take } from 'rxjs/operators';
+
 import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuardService implements CanActivate {
+export class AuthGuardService implements CanActivate, CanLoad {
+  
+  public numberListened = 1;
 
   public constructor(public authService: AuthService) { }
   
-  public canActivate(): boolean {
+  public canActivate(): Promise<boolean> {
     return this.authService.isAuth();
+  }
+  
+  public canLoad(): Promise<boolean> {
+    return this.authService.isAuth().pipe(take(this.numberListened));
   }
 }

@@ -8,9 +8,10 @@ import Swal from 'sweetalert2';
 import { Store } from '@ngrx/store';
 
 //App
-import { AppState } from '../../app.reducer';
+// import { AppState } from '../../app.reducer';
 import { IngresoEgresoModel } from '../ingreso-egreso.model';
 import { IngresoEgresoService } from '../ingreso-egreso.service';
+import * as fromIngresoEgreso from '../ingreso-egreso.reducer';
 
 @Component({
   selector: 'app-detalle',
@@ -22,7 +23,7 @@ export class DetalleComponent implements OnInit, OnDestroy {
   public items: IngresoEgresoModel[];
   public subscription: Subscription = new Subscription();
 
-  constructor(private store: Store<AppState>, private ingresoEgresoService: IngresoEgresoService) { 
+  constructor(private store: Store<fromIngresoEgreso.AppState>, private ingresoEgresoService: IngresoEgresoService) { 
     this.subscription = this.store.select('ingresoEgreso').subscribe(ingresoEgreso => {
       this.items = ingresoEgreso.items;
     });

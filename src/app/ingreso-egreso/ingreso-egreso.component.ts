@@ -2,15 +2,12 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-
-//Alert
 import Swal from 'sweetalert2';
 
-//Redux
+import * as fromIgresoEgreso from './ingreso-egreso.reducer'
 import { Store } from '@ngrx/store';
-import { AppState } from '../app.reducer';
+// import { AppState } from '../app.reducer';
 
-//app
 import { IngresoEgresoModel } from './ingreso-egreso.model';
 import { IngresoEgresoService } from './ingreso-egreso.service';
 import { ActivarLoadingAction, DescactivarLoadingAction } from '../shared/ui.accions';
@@ -27,7 +24,7 @@ export class IngresoEgresoComponent implements OnInit, OnDestroy {
   public loadingSubscription: Subscription = new Subscription();
   public cargando: boolean;
 
-  constructor(public ingresoEgresoService: IngresoEgresoService, private store: Store<AppState>) { }
+  constructor(public ingresoEgresoService: IngresoEgresoService, private store: Store<fromIgresoEgreso.AppState>) { }
   
   ngOnInit() {
     this.loadingSubscription = this.store.select('ui').subscribe(ui => this.cargando = ui.isLoading);
@@ -44,10 +41,12 @@ export class IngresoEgresoComponent implements OnInit, OnDestroy {
   public crearIngresoEgreso(): void {
     this.store.dispatch(new ActivarLoadingAction());
     const ingresoEgreso = new IngresoEgresoModel({ ...this.form.value, tipo: this.tipo});
-    this.ingresoEgresoService.crearIngresoEgreso( ingresoEgreso ).then(() => {
+    this.ingresoEgresoService.crearIngresoEgreso( ingresoEgreso )
+    .then(() => {
       this.store.dispatch(new DescactivarLoadingAction());
       Swal('Creado', ingresoEgreso.descripcion, 'success');
-    }).catch(() => {
+    })
+    .catch(() => {
       this.store.dispatch(new DescactivarLoadingAction());
       Swal('Error en crear' + `${this.tipo}`, ingresoEgreso.descripcion, 'error');
     });

@@ -1,21 +1,16 @@
-//angular
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { map } from 'rxjs/operators'
 import { Subscription } from 'rxjs';
 
-//Firebase
 import * as firebase from 'firebase';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 
-//Sweet alert 2
 import Swal from 'sweetalert2';
 
-//Models
 import { User } from './user.model';
 
-//Redux - ngrx
 import { Store } from '@ngrx/store';
 import { AppState } from '../app.reducer';
 import { ActivarLoadingAction, DescactivarLoadingAction } from '../shared/ui.accions';
