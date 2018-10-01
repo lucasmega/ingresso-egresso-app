@@ -8,4 +8,4 @@ export const dashbordRoutes: Routes = [
     {path: '', component: EstadisticaComponent},
     {path: 'ingresso-egresso', component: IngresoEgresoComponent},
     {path: 'detalle', component: DetalleComponent},
-]
+];
